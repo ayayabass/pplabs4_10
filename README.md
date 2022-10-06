@@ -1,2 +1,2 @@
 # Versions
-virtualenv + python 3.7
+virtualenv + python 3.8
