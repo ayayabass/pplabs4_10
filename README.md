@@ -1,1 +1,3 @@
-# pplabs4_10
+# Versions
+python 3.8.0
+virtualenv
