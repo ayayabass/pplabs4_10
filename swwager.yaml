@@ -121,8 +121,8 @@ paths:
             default: available
             enum:
               - available
-              - expected
-              - sold
+              - pending
+
       responses:
         '200':
           description: successful operation
@@ -404,11 +404,20 @@ components:
         name: autor
     Book:
       required:
+        - book_id
+        - author
         - name
-        - photoUrls
+        - status
+        - description
+        - photo_url
+        - price
+        - year
+        - language
+        - id_genre
+        - id_author
       type: object
       properties:
-        id:
+        book_id:
           type: integer
           example: 10
         name:
@@ -417,9 +426,9 @@ components:
         price:
           type: integer
           example: 150 
-        genre:
+        id_genre:
           $ref: '#/components/schemas/Genre'
-        photoUrls:
+        photo_url:
           type: array
           xml:
             wrapped: true
@@ -427,7 +436,7 @@ components:
             type: string
             xml:
               name: photoUrl
-        author:
+        id_author:
           type: array
           items:
             $ref: '#/components/schemas/Author'
@@ -447,10 +456,14 @@ components:
     Admin:
       type: object
       required:
+        - admin_id
         - full_name
         - username
         - password
       properties:
+        admin_id:
+          type: integer
+          example: 1
         full_name:
           type: string
           example: Joh Green
@@ -463,10 +476,16 @@ components:
     Order:
       type: object
       required:
+        - order_id
         - full_name
         - email
         - phone
+        - id_book
+        - quantity
       properties:
+        order_id:
+          type: integer
+          example: 1
         full_name:
           type: string
         email:
@@ -475,6 +494,12 @@ components:
         phone:
           type: string
           example: 380690458795
+        id_book:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 2
   securitySchemes:
     bookstore_auth:
       type: oauth2
