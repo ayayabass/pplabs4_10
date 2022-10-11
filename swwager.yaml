@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Swagger hotel reservation - OpenAPI 3.0
+  title: Swagger book shop - OpenAPI 3.0
   description: |-
     This is a sample Book Store Server based on the OpenAPI 3.0 specification. 
     
@@ -98,8 +98,6 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Books"
-        '404':
-          description: Books not found
       security:
         - bookstore_auth:
             - write:books
@@ -116,7 +114,7 @@ paths:
         - name: status
           in: query
           description: Status values that need to be considered for filter
-          required: false
+          required: true
           explode: true
           schema:
             type: string
@@ -156,7 +154,7 @@ paths:
         - name: genre
           in: query
           description: Genre values that need to be considered for filter
-          required: false
+          required: true
           explode: true
           schema:
             type: string
@@ -324,127 +322,61 @@ paths:
           description: successful operation
         "404":
           description: "Invalid username or password"
-
-  /user:
+          
+  /books/order/{bookId}:   
     post:
-      tags:
-        - user
-      summary: Create user
-      description: This can only be done by the logged in user.
-      operationId: createUser
-      requestBody:
-        description: Created user object
-        content:
-          application/json:
+        summary: Order book by id
+        tags: 
+          - order
+        operationId: orderBook
+        parameters: 
+          - name: bookId
+            in: path
+            required: true
+            description: book id
             schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        default:
-          description: successful operation
+              type: string
+        requestBody:
+          required: true
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/User'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/User'
-  /user/login:
-    get:
-      tags:
-        - user
-      summary: Logs user into the system
-      description: ''
-      operationId: loginUser
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: false
+               schema:
+                 $ref: "#/components/schemas/Order"
+        responses:
+          '200':
+            description: successful operation
+          '400':
+            description: "Invalid book id"
+            
+    delete:
+      summary: Delete order by book id and email
+      tags: 
+        - order
+      operationId: deleteOrder
+      parameters: 
+        - name: bookId
+          in: path
+          required: true
+          description: Book id
           schema:
             type: string
-        - name: password
+        
+        - name: email
           in: query
-          description: The password for login in clear text
-          required: false
+          required: true
+          description: email of client
           schema:
             type: string
+            pattern: '/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'
+
+        
       responses:
         '200':
-          description: successful operation
-          content:
-            application/xml:
-              schema:
-                type: string
-            application/json:
-              schema:
-                type: string
+          description: Order cancelled successfully
+          content: {}
         '400':
-          description: Invalid username/password supplied
-  /user/logout:
-    get:
-      tags:
-        - user
-      summary: Logs out current logged in user session
-      description: ''
-      operationId: logoutUser
-      parameters: []
-      responses:
-        default:
-          description: successful operation
-  /user/{username}:
-    put:
-      tags:
-        - user
-      summary: Update user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be deleted
-          required: true
-          schema:
-            type: string
-      requestBody:
-        description: Update an existent user in the store
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/xml:
-            schema:
-              $ref: '#/components/schemas/User'
-          application/x-www-form-urlencoded:
-            schema:
-              $ref: '#/components/schemas/User'
-      responses:
-        default:
-          description: successful operation
-    delete:
-      tags:
-        - user
-      summary: Delete user
-      description: This can only be done by the logged in user.
-      operationId: deleteUser
-      parameters:
-        - name: username
-          in: path
-          description: The name that needs to be deleted
-          required: true
-          schema:
-            type: string
-      responses:
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-  
+          description: "Invalid book id or email"
+    
                 
 components:
   schemas:
@@ -508,7 +440,6 @@ components:
           enum:
             - available
             - pending
-            - sold
     Books:
       type: array
       items:
@@ -529,33 +460,21 @@ components:
         password:
           type: string
           example: 12345678
-    User:
+    Order:
       type: object
+      required:
+        - full_name
+        - email
+        - phone
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        username:
+        full_name:
           type: string
-          example: theUser
-        firstName:
-          type: string
-          example: John
-        lastName:
-          type: string
-          example: James
         email:
           type: string
-          example: john@email.com
-        password:
-          type: string
-          example: '1234578787'
+          example: klop@gmail.com
         phone:
           type: string
-          example: '+380980654785'
-      xml:
-        name: user
+          example: 380690458795
   securitySchemes:
     bookstore_auth:
       type: oauth2
@@ -565,4 +484,3 @@ components:
           scopes:
             write:books: modify books in your account
             read:books: read your books
-
