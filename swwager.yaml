@@ -1,0 +1,511 @@
+openapi: 3.0.3
+info:
+  title: Swagger book shop - OpenAPI 3.0
+  description: |-
+    This is a sample Book Store Server based on the OpenAPI 3.0 specification. 
+    
+    Useful link:
+    - [The Books Store repository](https://github.com/ayayabass/pplabs4_10)
+  version: 1.0.11
+servers:
+    - url: http://127.0.0.1:5000/
+paths:
+  /book:
+    post:
+      tags:
+        - book
+      summary: Add a new book to the store
+      description: Add a new book to the store
+      operationId: addBook
+      requestBody:
+        description: Create a new book in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Book'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '405':
+          description: Invalid input
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+    put:
+      tags:
+        - book
+      summary: Update an existing book
+      description: Update an existing book by Id
+      operationId: updateBook
+      requestBody:
+        description: Update an existent book in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Book'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Book'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Book'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Book not found
+        '405':
+          description: Validation exception
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books  
+  /books:
+    get:
+      summary: get all books
+      tags:
+        - books
+      operationId: getAllBooks
+      responses:
+        '200':
+          description: successfull response 
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Books"
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books  
+      
+  /books/findByStatus:
+    get:
+      tags:
+        - books
+      summary: Finds Books by status
+      description: Multiple status values can be provided with comma separated strings
+      operationId: findBooksByStatus
+      parameters:
+        - name: status
+          in: query
+          description: Status values that need to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: available
+            enum:
+              - available
+              - pending
+
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid status value
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+  /books/findByGenre:
+    get:
+      tags:
+        - books
+      summary: Finds Books by Genre
+      description: ''
+      operationId: findBooksByGenre
+      parameters:
+        - name: genre
+          in: query
+          description: Genre values that need to be considered for filter
+          required: true
+          explode: true
+          schema:
+            type: string
+            default: available
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid status value
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+  /books/{author}:
+    get:
+      tags:
+        - books
+      summary: Find books by author
+      description: Returns all author's books
+      operationId: getBooksByAuthor
+      parameters:
+        - name: author
+          in: path
+          description: authorName of book to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid authorName supplied
+        '404':
+          description: Books not found
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+  /books/{bookName}:
+    get:
+      tags:
+        - books
+      summary: Find book by Name
+      description: Returns a single book
+      operationId: getBookByName
+      parameters:
+        - name: bookName
+          in: path
+          description: Name of book to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid Name supplied
+        '404':
+          description: Book not found
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+  /book/{bookId}:
+    get:
+      tags:
+        - book
+      summary: Find book by ID
+      description: Returns a single book
+      operationId: getBookById
+      parameters:
+        - name: bookId
+          in: path
+          description: ID of book to return
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Book not found
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+    delete:
+      tags:
+        - book
+      summary: Deletes a book
+      description: delete a book
+      operationId: deleteBook
+      parameters:
+        - name: bookId
+          in: path
+          description: Book id to delete
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid book value
+      security:
+        - bookstore_auth:
+            - write:books
+            - read:books
+  /admin:
+    get:
+      tags:
+        - admin
+      summary: "Logs admin"
+      operationId: loginAdmin
+      parameters:
+        - name: "username"
+          in: "query"
+          description: "The user name for login"
+          required: true
+          schema:
+            type: "string"
+        - name: "password"
+          in: "query"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "200":
+          description: successful operation
+        "404":
+          description: "Invalid username or password"
+          
+  /books/order/{bookId}:   
+    post:
+        summary: Order book by id
+        tags: 
+          - order
+        operationId: orderBook
+        parameters: 
+          - name: bookId
+            in: path
+            required: true
+            description: book id
+            schema:
+              type: string
+        requestBody:
+          required: true
+          content:
+            application/json:
+               schema:
+                 $ref: "#/components/schemas/Order"
+        responses:
+          '200':
+            description: successful operation
+          '400':
+            description: "Invalid book id"
+            
+    delete:
+      summary: Delete order by book id and email
+      tags: 
+        - order
+      operationId: deleteOrder
+      parameters: 
+        - name: bookId
+          in: path
+          required: true
+          description: Book id
+          schema:
+            type: string
+        
+        - name: email
+          in: query
+          required: true
+          description: email of client
+          schema:
+            type: string
+            pattern: '/^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i'
+
+        
+      responses:
+        '200':
+          description: Order cancelled successfully
+          content: {}
+        '400':
+          description: "Invalid book id or email"
+    
+                
+components:
+  schemas:
+    Genre:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: fantasy
+      xml:
+        name: genre
+    Author:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Roman
+      xml:
+        name: autor
+    Book:
+      required:
+        - book_id
+        - author
+        - name
+        - status
+        - description
+        - photo_url
+        - price
+        - year
+        - language
+        - id_genre
+        - id_author
+      type: object
+      properties:
+        book_id:
+          type: integer
+          example: 10
+        name:
+          type: string
+          example: ""
+        price:
+          type: integer
+          example: 150 
+        id_genre:
+          $ref: '#/components/schemas/Genre'
+        photo_url:
+          type: array
+          xml:
+            wrapped: true
+          items:
+            type: string
+            xml:
+              name: photoUrl
+        id_author:
+          type: array
+          items:
+            $ref: '#/components/schemas/Author'
+        description:
+          type: string
+          example: This book about ...
+        status:
+          type: string
+          description: book status in the store
+          enum:
+            - available
+            - pending
+    Books:
+      type: array
+      items:
+        $ref: "#/components/schemas/Book"
+    Admin:
+      type: object
+      required:
+        - admin_id
+        - full_name
+        - username
+        - password
+      properties:
+        admin_id:
+          type: integer
+          example: 1
+        full_name:
+          type: string
+          example: Joh Green
+        username:
+          type: string
+          example: greep
+        password:
+          type: string
+          example: 12345678
+    Order:
+      type: object
+      required:
+        - order_id
+        - full_name
+        - email
+        - phone
+        - id_book
+        - quantity
+      properties:
+        order_id:
+          type: integer
+          example: 1
+        full_name:
+          type: string
+        email:
+          type: string
+          example: klop@gmail.com
+        phone:
+          type: string
+          example: 380690458795
+        id_book:
+          type: integer
+          example: 1
+        quantity:
+          type: integer
+          example: 2
+  securitySchemes:
+    bookstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://bookstore3.swagger.io/oauth/authorize
+          scopes:
+            write:books: modify books in your account
+            read:books: read your books
